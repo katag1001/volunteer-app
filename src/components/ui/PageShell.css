@@ -1,0 +1,10 @@
+.ui-page-shell {
+  min-height: 100svh;
+  background: var(--color-bg);
+}
+
+.ui-page-shell__inner {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5);
+}

@@ -1,0 +1,105 @@
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  text-align: left;
+}
+
+.profile-form__picture-grid {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.profile-form__picture {
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-1);
+  background: var(--color-surface);
+  cursor: pointer;
+  line-height: 0;
+}
+
+.profile-form__picture img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  display: block;
+}
+
+.profile-form__picture--selected {
+  border-color: var(--color-primary);
+}
+
+.profile-form__checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-2) var(--space-3);
+}
+
+.profile-form__checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  text-transform: capitalize;
+}
+
+.profile-form__other-row {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.profile-form__other-row input {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+}
+
+.profile-form__tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.profile-form__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+  border-radius: 999px;
+  padding: 2px var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.profile-form__tag button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: var(--text-md);
+  line-height: 1;
+  padding: 0;
+}
+
+.profile-form__toggles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.profile-form__error {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  margin: 0;
+}

@@ -1,0 +1,89 @@
+/*
+  Design tokens for the Cherry Volunteer Organiser.
+  Palette takes its warmth from cherry.org.uk (a deep cherry red against a
+  soft cream ground) but is toned down from that site's playful marketing
+  energy toward something clean and organised, per prd.md §5.
+*/
+:root {
+  /* Core palette */
+  --color-bg: #fdf8f5;
+  --color-surface: #ffffff;
+  --color-text: #2b2226;
+  --color-text-muted: #6f6169;
+  --color-border: #ecdfe1;
+
+  --color-primary: #b3294a;
+  --color-primary-hover: #96203c;
+  --color-primary-bg: #fbe9ee;
+  --color-primary-border: #eec2cd;
+
+  --color-danger: #b3294a;
+  --color-danger-bg: #fbe9ee;
+
+  /* Status colours: not_started / underway / resolved */
+  --color-status-not-started: #6f6169;
+  --color-status-not-started-bg: #f1ecee;
+  --color-status-underway: #b5750f;
+  --color-status-underway-bg: #fbf0dd;
+  --color-status-resolved: #2f7d55;
+  --color-status-resolved-bg: #e7f4ee;
+
+  /* Typography */
+  --font-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.75rem;
+
+  /* Spacing scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Shape */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(43, 34, 38, 0.06);
+  --shadow-md: 0 8px 24px rgba(43, 34, 38, 0.08);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1c1518;
+    --color-surface: #261d21;
+    --color-text: #f3e9eb;
+    --color-text-muted: #b7a5ab;
+    --color-border: #3a2c31;
+
+    --color-primary: #e07290;
+    --color-primary-hover: #eb93ab;
+    --color-primary-bg: #3a2129;
+    --color-primary-border: #5a2f3c;
+
+    --color-danger: #e07290;
+    --color-danger-bg: #3a2129;
+
+    --color-status-not-started: #b7a5ab;
+    --color-status-not-started-bg: #2c2226;
+    --color-status-underway: #e0ab5c;
+    --color-status-underway-bg: #362a1b;
+    --color-status-resolved: #6fc79a;
+    --color-status-resolved-bg: #1c3327;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+    color-scheme: dark;
+  }
+}

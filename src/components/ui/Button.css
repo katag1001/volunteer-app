@@ -1,0 +1,56 @@
+.ui-button {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.ui-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ui-button--primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+.ui-button--primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.ui-button--secondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.ui-button--secondary:hover:not(:disabled) {
+  border-color: var(--color-primary-border);
+  color: var(--color-primary);
+}
+
+.ui-button--ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+}
+.ui-button--ghost:hover:not(:disabled) {
+  color: var(--color-text);
+  background: var(--color-border);
+}
+
+.ui-button--danger {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-color: var(--color-danger-bg);
+}
+.ui-button--danger:hover:not(:disabled) {
+  border-color: var(--color-danger);
+}
+
+.ui-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

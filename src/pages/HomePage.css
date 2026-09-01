@@ -1,0 +1,16 @@
+.home-card {
+  max-width: 480px;
+  margin: var(--space-7) auto 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.home-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
