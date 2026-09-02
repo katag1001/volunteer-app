@@ -5,6 +5,7 @@ const { requireAdmin } = require('../middleware/auth.js')
 router.use(requireAdmin)
 
 router.get('/pending-users', adminController.listPendingUsers)
+router.get('/pending-users/count', adminController.pendingCount)
 router.post('/users/:id/approve', adminController.approveUser)
 router.post('/users/:id/reject', adminController.rejectUser)
 router.get('/users', adminController.listUsers)

@@ -12,6 +12,7 @@ const {
   buildVerificationLink,
   sendPasswordResetEmail,
   buildResetLink,
+  sendPendingApprovalEmail,
 } = require('../utils/mailer.js')
 const { signResetToken, verifyResetToken } = require('../utils/resetToken.js')
 const { ensureProfileExists } = require('../utils/ensureProfile.js')
@@ -116,6 +117,13 @@ async function verifyEmail(req, res) {
     await user.save()
     if (isSeedAdmin) {
       await ensureProfileExists(user)
+    } else {
+      try {
+        const admins = await AuthUser.find({ is_admin: true }).select('email')
+        await sendPendingApprovalEmail(admins.map((admin) => admin.email), user)
+      } catch (emailError) {
+        console.error('Failed to send pending-approval notification:', emailError.message)
+      }
     }
 
     res.json({ verified: true, autoApproved: isSeedAdmin, isAdmin: user.is_admin })

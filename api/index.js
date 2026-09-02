@@ -1,5 +1,5 @@
 const app      = require('express')()
-require("dotenv").config()
+require("dotenv").config({ quiet: true })
 const { connectToDatabase } = require('./config/db.js')
 const port     = process.env.PORT || 4444
 

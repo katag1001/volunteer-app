@@ -4,23 +4,40 @@ const { purgeIfExpired } = require('../utils/accountExpiry.js')
 const { ensureProfileExists } = require('../utils/ensureProfile.js')
 const { deleteUserAccount } = require('../utils/deleteAccount.js')
 
+// Shared by listPendingUsers and pendingCount — verified-but-unapproved
+// users, with the 2-week approval-expiry clock swept across all of them
+// first, since each of these calls is a trigger point for that lazy sweep
+// (the other is a login attempt, already handled in authController.login).
+async function getStillPendingUsers() {
+  const pending = await AuthUser.find({ email_verified: true, is_approved: false })
+  const stillPending = []
+  for (const user of pending) {
+    if (!(await purgeIfExpired(user))) {
+      stillPending.push(user)
+    }
+  }
+  return stillPending
+}
+
 // GET /admin/pending-users
-// prd.md §3.3 — verified-but-unapproved users. Sweeps the 2-week
-// approval-expiry clock across all of them first, since this page load is
-// one of the two named trigger points for that lazy sweep (the other is a
-// login attempt, already handled in authController.login).
 async function listPendingUsers(req, res) {
   try {
-    const pending = await AuthUser.find({ email_verified: true, is_approved: false })
-    const stillPending = []
-    for (const user of pending) {
-      if (!(await purgeIfExpired(user))) {
-        stillPending.push(user)
-      }
-    }
+    const stillPending = await getStillPendingUsers()
     res.json({ users: stillPending.map((user) => user.toPublicJSON()) })
   } catch {
     res.status(500).json({ error: 'failed_to_list_pending_users' })
+  }
+}
+
+// GET /admin/pending-users/count — cheap poll target for the nav badge, so
+// the sidebar doesn't have to fetch (and render) the full pending list just
+// to know whether to show a number.
+async function pendingCount(req, res) {
+  try {
+    const stillPending = await getStillPendingUsers()
+    res.json({ count: stillPending.length })
+  } catch {
+    res.status(500).json({ error: 'failed_to_count_pending_users' })
   }
 }
 
@@ -145,6 +162,7 @@ async function setKeyPlayer(req, res) {
 
 module.exports = {
   listPendingUsers,
+  pendingCount,
   approveUser,
   rejectUser,
   listUsers,

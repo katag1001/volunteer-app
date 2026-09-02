@@ -53,10 +53,33 @@ function sendPasswordResetEmail(user, token) {
   })
 }
 
+function buildApprovalsLink() {
+  return `${process.env.FRONTEND_URL}/admin?tab=approvals`
+}
+
+// Notifies every current admin that a new signup is waiting in the
+// approvals queue. Sent once, right when a user becomes pending (see
+// authController.verifyEmail) — not a digest, so admins can act promptly.
+function sendPendingApprovalEmail(adminEmails, user) {
+  if (!adminEmails || adminEmails.length === 0) return Promise.resolve()
+  const link = buildApprovalsLink()
+  return sendMail({
+    to: adminEmails,
+    subject: 'New signup awaiting approval — Cherry Volunteer Organiser',
+    html: `
+      <p>Hi,</p>
+      <p>${user.first_name} ${user.last_name} (${user.email}) has verified their email and is waiting to be approved.</p>
+      <p><a href="${link}">${link}</a></p>
+    `,
+  })
+}
+
 module.exports = {
   sendMail,
   buildVerificationLink,
   sendVerificationEmail,
   buildResetLink,
   sendPasswordResetEmail,
+  buildApprovalsLink,
+  sendPendingApprovalEmail,
 }

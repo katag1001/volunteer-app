@@ -75,6 +75,10 @@ a.app-nav__title:hover {
 }
 
 .app-nav__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
   font-size: var(--text-sm);
   color: var(--color-text-muted);
   text-decoration: none;
@@ -83,6 +87,22 @@ a.app-nav__title:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.app-nav__badge {
+  flex-shrink: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-surface);
+  background: var(--color-primary);
+  border-radius: 999px;
 }
 
 .app-nav__link:hover {

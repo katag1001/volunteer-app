@@ -21,6 +21,7 @@ function AppLayout() {
   const location = useLocation()
   const [session, setSession] = useState(null)
   const [myProjects, setMyProjects] = useState([])
+  const [pendingApprovals, setPendingApprovals] = useState(0)
 
   // /admin's two sidebar entries both point at the one route with a
   // different ?tab=, so NavLink's pathname-only active check can't tell
@@ -38,6 +39,13 @@ function AppLayout() {
       .then((data) => setMyProjects(data.projects))
       .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    if (session?.state !== 'admin') return
+    apiRequest('/admin/pending-users/count', { token: getToken() })
+      .then((data) => setPendingApprovals(data.count))
+      .catch(() => {})
+  }, [session])
 
   const handleLogOut = () => {
     clearToken()
@@ -86,6 +94,7 @@ function AppLayout() {
               </NavLink>
               <Link to="/admin?tab=approvals" className={adminLinkClass('approvals')}>
                 Approvals
+                {pendingApprovals > 0 && <span className="app-nav__badge">{pendingApprovals}</span>}
               </Link>
               <Link to="/admin?tab=members" className={adminLinkClass('members')}>
                 Members
