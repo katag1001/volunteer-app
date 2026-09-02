@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import { PageShell, Card, Button, Modal } from '../../components/ui'
+import { Button, Modal } from '../../components/ui'
 import { apiRequest } from '../../lib/api.js'
 import { getToken } from '../../lib/session.js'
-import './AdminPages.css'
 
-function AdminUsersPage() {
+function MembersPanel() {
   const [users, setUsers] = useState(null)
   const [error, setError] = useState('')
   const [deleteTarget, setDeleteTarget] = useState(null)
@@ -67,51 +66,48 @@ function AdminUsersPage() {
   }
 
   return (
-    <PageShell>
-      <Card className="admin-card">
-        <h1>Members</h1>
-        <p className="admin-card__intro">Promote, demote, or remove any member's account.</p>
+    <>
+      <p className="admin-card__intro">Promote, demote, or remove any member's account.</p>
 
-        {error && <p className="admin-card__error">{error}</p>}
+      {error && <p className="admin-card__error">{error}</p>}
 
-        {users === null && <p>Loading…</p>}
-        {users?.length === 0 && <p>No members yet.</p>}
+      {users === null && <p>Loading…</p>}
+      {users?.length === 0 && <p>No members yet.</p>}
 
-        {users?.map((user) => (
-          <div key={user.id} className="admin-row">
-            <div>
-              <strong>{user.first_name} {user.last_name}</strong>
-              {user.is_seed_admin && <span className="admin-badge">Seed admin</span>}
-              {!user.is_seed_admin && user.is_admin && <span className="admin-badge">Admin</span>}
-              {user.is_key_player && <span className="admin-badge admin-badge--key-player">Key player</span>}
-              <div className="admin-row__meta">{user.email}</div>
-            </div>
-            <div className="admin-row__actions">
-              <Button
-                variant="secondary"
-                onClick={() => handleToggleKeyPlayer(user)}
-                disabled={busyId === user.id}
-              >
-                {user.is_key_player ? 'Unset key player' : 'Set key player'}
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => handleToggleAdmin(user)}
-                disabled={busyId === user.id || user.is_seed_admin}
-              >
-                {user.is_admin ? 'Demote' : 'Promote'}
-              </Button>
-              <Button
-                variant="danger"
-                onClick={() => setDeleteTarget(user)}
-                disabled={busyId === user.id || user.is_seed_admin}
-              >
-                Delete
-              </Button>
-            </div>
+      {users?.map((user) => (
+        <div key={user.id} className="admin-row">
+          <div>
+            <strong>{user.first_name} {user.last_name}</strong>
+            {user.is_seed_admin && <span className="admin-badge">Seed admin</span>}
+            {!user.is_seed_admin && user.is_admin && <span className="admin-badge">Admin</span>}
+            {user.is_key_player && <span className="admin-badge admin-badge--key-player">Key player</span>}
+            <div className="admin-row__meta">{user.email}</div>
           </div>
-        ))}
-      </Card>
+          <div className="admin-row__actions">
+            <Button
+              variant="secondary"
+              onClick={() => handleToggleKeyPlayer(user)}
+              disabled={busyId === user.id}
+            >
+              {user.is_key_player ? 'Unset key player' : 'Set key player'}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => handleToggleAdmin(user)}
+              disabled={busyId === user.id || user.is_seed_admin}
+            >
+              {user.is_admin ? 'Demote' : 'Promote'}
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => setDeleteTarget(user)}
+              disabled={busyId === user.id || user.is_seed_admin}
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
+      ))}
 
       <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Delete this account?">
         <p>
@@ -127,8 +123,8 @@ function AdminUsersPage() {
           </Button>
         </div>
       </Modal>
-    </PageShell>
+    </>
   )
 }
 
-export default AdminUsersPage
+export default MembersPanel

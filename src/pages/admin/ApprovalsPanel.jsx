@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import { PageShell, Card, Button, Modal } from '../../components/ui'
+import { Button, Modal } from '../../components/ui'
 import { apiRequest } from '../../lib/api.js'
 import { getToken } from '../../lib/session.js'
-import './AdminPages.css'
 
-function ApprovalsPage() {
+function ApprovalsPanel() {
   const [users, setUsers] = useState(null)
   const [error, setError] = useState('')
   const [rejectTarget, setRejectTarget] = useState(null)
@@ -45,33 +44,30 @@ function ApprovalsPage() {
   }
 
   return (
-    <PageShell>
-      <Card className="admin-card">
-        <h1>Approvals</h1>
-        <p className="admin-card__intro">Members who've verified their email and are waiting to be approved.</p>
+    <>
+      <p className="admin-card__intro">Members who've verified their email and are waiting to be approved.</p>
 
-        {error && <p className="admin-card__error">{error}</p>}
+      {error && <p className="admin-card__error">{error}</p>}
 
-        {users === null && <p>Loading…</p>}
-        {users?.length === 0 && <p>Nothing pending right now.</p>}
+      {users === null && <p>Loading…</p>}
+      {users?.length === 0 && <p>Nothing pending right now.</p>}
 
-        {users?.map((user) => (
-          <div key={user.id} className="admin-row">
-            <div>
-              <strong>{user.first_name} {user.last_name}</strong>
-              <div className="admin-row__meta">{user.email}</div>
-            </div>
-            <div className="admin-row__actions">
-              <Button onClick={() => handleApprove(user)} disabled={busyId === user.id}>
-                Approve
-              </Button>
-              <Button variant="danger" onClick={() => setRejectTarget(user)} disabled={busyId === user.id}>
-                Reject
-              </Button>
-            </div>
+      {users?.map((user) => (
+        <div key={user.id} className="admin-row">
+          <div>
+            <strong>{user.first_name} {user.last_name}</strong>
+            <div className="admin-row__meta">{user.email}</div>
           </div>
-        ))}
-      </Card>
+          <div className="admin-row__actions">
+            <Button onClick={() => handleApprove(user)} disabled={busyId === user.id}>
+              Approve
+            </Button>
+            <Button variant="danger" onClick={() => setRejectTarget(user)} disabled={busyId === user.id}>
+              Reject
+            </Button>
+          </div>
+        </div>
+      ))}
 
       <Modal open={!!rejectTarget} onClose={() => setRejectTarget(null)} title="Reject this signup?">
         <p>
@@ -87,8 +83,8 @@ function ApprovalsPage() {
           </Button>
         </div>
       </Modal>
-    </PageShell>
+    </>
   )
 }
 
-export default ApprovalsPage
+export default ApprovalsPanel

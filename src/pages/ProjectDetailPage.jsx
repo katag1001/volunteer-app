@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom'
 import { PageShell, Card, Button, Modal, FormField } from '../components/ui'
 import StatusBadge from '../components/StatusBadge.jsx'
 import IssueCard from '../components/IssueCard.jsx'
@@ -13,6 +13,8 @@ const DELETE_PHRASE = 'delete project'
 function ProjectDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const targetIssueId = searchParams.get('issue')
   const [project, setProject] = useState(null)
   const [issues, setIssues] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
@@ -153,13 +155,16 @@ function ProjectDetailPage() {
 
   return (
     <PageShell>
+              <h1>
+          <Link to="/projects" className="project-detail__crumb">
+            Projects
+          </Link>
+        </h1>
       <Card className="project-detail">
-        <Link to="/projects" className="project-detail__back">
-          ← All projects
-        </Link>
+
 
         <div className="project-detail__header">
-          <h1>{project.title}</h1>
+          <h2>{project.title}</h2>
           <StatusBadge status={project.status} />
         </div>
 
@@ -208,6 +213,7 @@ function ProjectDetailPage() {
               currentUser={currentUser}
               isMember={project.is_member}
               onChanged={loadIssues}
+              autoExpand={issue.id === targetIssueId}
             />
           ))}
         </div>

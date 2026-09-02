@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { fetchSession } from '../lib/session.js'
 
 // build-plan.md Phase A3 — "route guard so non-admins can't reach either
@@ -27,7 +27,7 @@ function RequireAdmin({ children }) {
     }
   }, [navigate])
 
-  return checked ? children : null
+  return checked ? (children ?? <Outlet />) : null
 }
 
 export default RequireAdmin

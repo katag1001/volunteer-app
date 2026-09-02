@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import StatusBadge from './StatusBadge.jsx'
 import TaskRow from './TaskRow.jsx'
 import PollCard from './PollCard.jsx'
@@ -11,7 +11,8 @@ import './IssueCard.css'
 // local expand/collapse. Full detail (description, people, tasks) is
 // lazy-loaded only when first expanded, same lazy-detail pattern as
 // DirectoryPage.
-function IssueCard({ issue, projectMembers, currentUser, isMember, onChanged }) {
+function IssueCard({ issue, projectMembers, currentUser, isMember, onChanged, autoExpand }) {
+  const rootRef = useRef(null)
   const [expanded, setExpanded] = useState(false)
   const [detail, setDetail] = useState(null)
   const [tasks, setTasks] = useState(null)
@@ -56,6 +57,18 @@ function IssueCard({ issue, projectMembers, currentUser, isMember, onChanged }) 
       loadPolls()
     }
   }
+
+  // Deep-link target from the dashboard ("click on them and go through to
+  // that page") — expand and scroll to this issue as soon as it mounts.
+  useEffect(() => {
+    if (!autoExpand) return
+    setExpanded(true)
+    loadDetail()
+    loadTasks()
+    loadPolls()
+    rootRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoExpand])
 
   const handleAddPerson = async () => {
     if (!addSelection) return
@@ -149,7 +162,7 @@ function IssueCard({ issue, projectMembers, currentUser, isMember, onChanged }) 
     : []
 
   return (
-    <div className="issue-card">
+    <div className="issue-card" ref={rootRef}>
       <button type="button" className="issue-card__summary" onClick={toggle}>
         <span className="issue-card__title">{issue.title}</span>
         <span className="issue-card__meta">

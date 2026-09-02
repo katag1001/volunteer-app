@@ -1,6 +1,5 @@
 .directory-card {
-  max-width: 900px;
-  margin: var(--space-7) auto var(--space-8);
+  margin: var(--space-6) 0 var(--space-8);
   text-align: left;
 }
 

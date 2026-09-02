@@ -1,14 +1,15 @@
 .project-detail {
-  max-width: 700px;
-  margin: var(--space-6) auto var(--space-8);
+  margin: var(--space-6) 0 var(--space-8);
   text-align: left;
 }
 
-.project-detail__back {
-  display: inline-block;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  margin-bottom: var(--space-4);
+.project-detail__crumb {
+  color: inherit;
+  text-decoration: none;
+}
+
+.project-detail__crumb:hover {
+  color: var(--color-primary);
 }
 
 .project-detail__header {
@@ -18,7 +19,7 @@
   gap: var(--space-3);
 }
 
-.project-detail__header h1 {
+.project-detail__header h2 {
   margin: 0;
 }
 

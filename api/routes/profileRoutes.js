@@ -5,6 +5,7 @@ const { requireActiveMember } = require('../middleware/auth.js')
 router.use(requireActiveMember)
 
 router.get('/me', profileController.getMyProfile)
+router.get('/me/dashboard', profileController.getMyDashboard)
 router.put('/me', profileController.updateMyProfile)
 router.delete('/me', profileController.deleteMyAccount)
 

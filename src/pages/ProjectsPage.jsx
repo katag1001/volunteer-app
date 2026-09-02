@@ -40,9 +40,9 @@ function ProjectsPage() {
 
   return (
     <PageShell>
+      <h2 className="page-subtitle">Projects</h2>
       <Card className="projects-card">
         <div className="projects-card__header">
-          <h1>Projects</h1>
           <Button onClick={() => setCreateOpen(true)}>+ New project</Button>
         </div>
 

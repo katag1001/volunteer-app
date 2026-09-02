@@ -6,7 +6,7 @@
 */
 :root {
   /* Core palette */
-  --color-bg: #fdf8f5;
+  --color-bg: #e64c4c0d;
   --color-surface: #ffffff;
   --color-text: #2b2226;
   --color-text-muted: #6f6169;
@@ -37,6 +37,12 @@
   --text-xl: 1.5rem;
   --text-2xl: 2rem;
   --text-3xl: 2.75rem;
+
+  /* Page-level heading roles — every page title (h1) and page subtitle/
+     intro line reads from these two, so their sizing stays consistent
+     across pages no matter which component renders them. */
+  --text-page-title: 2.25rem;
+  --text-page-subtitle: 1rem;
 
   /* Spacing scale (4px base) */
   --space-1: 4px;

@@ -1,5 +1,10 @@
 const AuthUser = require('../models/AuthUser.js')
 const UserProfile = require('../models/UserProfile.js')
+const Project = require('../models/Project.js')
+const ProjectMember = require('../models/ProjectMember.js')
+const Issue = require('../models/Issue.js')
+const IssueMember = require('../models/IssueMember.js')
+const Task = require('../models/Task.js')
 const { getMasterTeamList } = require('../utils/skillTeams.js')
 const { deleteUserAccount } = require('../utils/deleteAccount.js')
 
@@ -104,4 +109,55 @@ async function deleteMyAccount(req, res) {
   }
 }
 
-module.exports = { getMyProfile, updateMyProfile, deleteMyAccount }
+// GET /profile/me/dashboard
+// Powers the homepage dashboard: every project the user belongs to, every
+// issue they're a member of, and every task assigned to them, each carrying
+// its own status so the frontend can group them by stage.
+async function getMyDashboard(req, res) {
+  try {
+    const memberships = await ProjectMember.find({ user_id: req.user._id })
+    const projects = await Project.find({ _id: { $in: memberships.map((m) => m.project_id) } }).sort({ title: 1 })
+
+    const issueMemberships = await IssueMember.find({ user_id: req.user._id })
+    const issues = await Issue.find({ _id: { $in: issueMemberships.map((m) => m.issue_id) } }).sort({ title: 1 })
+
+    const tasks = await Task.find({ assigned_to: req.user._id }).sort({ name: 1 })
+    const taskIssues = await Issue.find({ _id: { $in: tasks.map((t) => t.issue_id) } }, 'title project_id')
+    const issueById = new Map(taskIssues.map((issue) => [issue._id.toString(), issue]))
+
+    const allProjectIds = new Set([
+      ...projects.map((p) => p._id.toString()),
+      ...issues.map((i) => i.project_id.toString()),
+      ...taskIssues.map((i) => i.project_id.toString()),
+    ])
+    const allProjects = await Project.find({ _id: { $in: [...allProjectIds] } }, 'title')
+    const projectTitleById = new Map(allProjects.map((p) => [p._id.toString(), p.title]))
+
+    res.json({
+      projects: projects.map((p) => ({ id: p._id, title: p.title, status: p.status })),
+      issues: issues.map((issue) => ({
+        id: issue._id,
+        title: issue.title,
+        status: issue.status,
+        project_id: issue.project_id,
+        project_title: projectTitleById.get(issue.project_id.toString()) ?? '',
+      })),
+      tasks: tasks.map((task) => {
+        const issue = issueById.get(task.issue_id.toString())
+        return {
+          id: task._id,
+          name: task.name,
+          status: task.status,
+          issue_id: task.issue_id,
+          issue_title: issue?.title ?? '',
+          project_id: issue?.project_id ?? null,
+          project_title: issue ? projectTitleById.get(issue.project_id.toString()) ?? '' : '',
+        }
+      }),
+    })
+  } catch {
+    res.status(500).json({ error: 'failed_to_load_dashboard' })
+  }
+}
+
+module.exports = { getMyProfile, updateMyProfile, deleteMyAccount, getMyDashboard }

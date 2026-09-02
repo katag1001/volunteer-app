@@ -27,7 +27,7 @@ h3 {
 }
 
 h1 {
-  font-size: var(--text-3xl);
+  font-size: var(--text-page-title);
 }
 h2 {
   font-size: var(--text-2xl);

@@ -1,5 +1,4 @@
 import { Routes, Route } from 'react-router-dom'
-import HomePage from './pages/HomePage.jsx'
 import SignupPage from './pages/SignupPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import CheckInboxPage from './pages/CheckInboxPage.jsx'
@@ -12,15 +11,15 @@ import EditProfilePage from './pages/EditProfilePage.jsx'
 import DirectoryPage from './pages/DirectoryPage.jsx'
 import ProjectsPage from './pages/ProjectsPage.jsx'
 import ProjectDetailPage from './pages/ProjectDetailPage.jsx'
-import ApprovalsPage from './pages/admin/ApprovalsPage.jsx'
-import AdminUsersPage from './pages/admin/AdminUsersPage.jsx'
+import DashboardPage from './pages/DashboardPage.jsx'
+import AdminPage from './pages/admin/AdminPage.jsx'
 import RequireAdmin from './components/RequireAdmin.jsx'
 import RequireActiveMember from './components/RequireActiveMember.jsx'
+import AppLayout from './components/AppLayout.jsx'
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/check-inbox" element={<CheckInboxPage />} />
@@ -36,54 +35,24 @@ function App() {
           </RequireActiveMember>
         }
       />
+
       <Route
-        path="/profile"
         element={
           <RequireActiveMember>
-            <EditProfilePage />
+            <AppLayout />
           </RequireActiveMember>
         }
-      />
-      <Route
-        path="/directory"
-        element={
-          <RequireActiveMember>
-            <DirectoryPage />
-          </RequireActiveMember>
-        }
-      />
-      <Route
-        path="/projects"
-        element={
-          <RequireActiveMember>
-            <ProjectsPage />
-          </RequireActiveMember>
-        }
-      />
-      <Route
-        path="/projects/:id"
-        element={
-          <RequireActiveMember>
-            <ProjectDetailPage />
-          </RequireActiveMember>
-        }
-      />
-      <Route
-        path="/admin/approvals"
-        element={
-          <RequireAdmin>
-            <ApprovalsPage />
-          </RequireAdmin>
-        }
-      />
-      <Route
-        path="/admin/users"
-        element={
-          <RequireAdmin>
-            <AdminUsersPage />
-          </RequireAdmin>
-        }
-      />
+      >
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/profile" element={<EditProfilePage />} />
+        <Route path="/directory" element={<DirectoryPage />} />
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/projects/:id" element={<ProjectDetailPage />} />
+
+        <Route element={<RequireAdmin />}>
+          <Route path="/admin" element={<AdminPage />} />
+        </Route>
+      </Route>
     </Routes>
   )
 }
