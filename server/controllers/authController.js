@@ -167,7 +167,8 @@ async function login(req, res) {
 
     const token = signSessionToken(user)
     res.json({ token, user: user.toPublicJSON() })
-  } catch {
+  } catch (error) {
+    console.error('Login failed:', error.message)
     res.status(500).json({ error: 'login_failed' })
   }
 }
