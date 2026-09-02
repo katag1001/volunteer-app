@@ -1,5 +1,17 @@
 const nodemailer = require('nodemailer')
 
+// Where to point links in emails (verify/reset/approvals) back at.
+// - Local dev: FRONTEND_URL from .env (http://localhost:5173).
+// - Vercel: falls back to the project's assigned production domain, then to
+//   the current deployment's own URL, so links work without having to set
+//   FRONTEND_URL by hand in the Vercel dashboard. Both are supplied
+//   automatically by Vercel and come without a protocol.
+const FRONTEND_URL =
+  process.env.FRONTEND_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`) ||
+  (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
+  'http://localhost:5173'
+
 let transporter = null
 
 function getTransporter() {
@@ -20,7 +32,7 @@ function sendMail({ to, subject, html }) {
 }
 
 function buildVerificationLink(token) {
-  return `${process.env.FRONTEND_URL}/verify?token=${encodeURIComponent(token)}`
+  return `${FRONTEND_URL}/verify?token=${encodeURIComponent(token)}`
 }
 
 function sendVerificationEmail(user, token) {
@@ -37,7 +49,7 @@ function sendVerificationEmail(user, token) {
 }
 
 function buildResetLink(token) {
-  return `${process.env.FRONTEND_URL}/reset-password?token=${encodeURIComponent(token)}`
+  return `${FRONTEND_URL}/reset-password?token=${encodeURIComponent(token)}`
 }
 
 function sendPasswordResetEmail(user, token) {
@@ -54,7 +66,7 @@ function sendPasswordResetEmail(user, token) {
 }
 
 function buildApprovalsLink() {
-  return `${process.env.FRONTEND_URL}/admin?tab=approvals`
+  return `${FRONTEND_URL}/admin?tab=approvals`
 }
 
 // Notifies every current admin that a new signup is waiting in the

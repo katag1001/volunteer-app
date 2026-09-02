@@ -11,13 +11,20 @@ connectToDatabase().catch(() => {})
 //==========================================================================
 app.use(require('cors')())
 //==========================================================================
-app.use('/auth',require('./routes/authRoutes.js'))
-app.use('/admin',require('./routes/adminRoutes.js'))
-app.use('/profile',require('./routes/profileRoutes.js'))
-app.use('/directory',require('./routes/directoryRoutes.js'))
-app.use('/projects',require('./routes/projectRoutes.js'))
-app.use('/issues',require('./routes/issueRoutes.js'))
-app.use('/tasks',require('./routes/taskRoutes.js'))
-app.use('/polls',require('./routes/pollRoutes.js'))
+app.use('/api/auth',require('./routes/authRoutes.js'))
+app.use('/api/admin',require('./routes/adminRoutes.js'))
+app.use('/api/profile',require('./routes/profileRoutes.js'))
+app.use('/api/directory',require('./routes/directoryRoutes.js'))
+app.use('/api/projects',require('./routes/projectRoutes.js'))
+app.use('/api/issues',require('./routes/issueRoutes.js'))
+app.use('/api/tasks',require('./routes/taskRoutes.js'))
+app.use('/api/polls',require('./routes/pollRoutes.js'))
 //==========================================================================
-app.listen(port, () => console.log("🚀 Listening on port: " + port + " 🚀"));
+// Vercel imports this file as a serverless function and calls the exported
+// app directly, so only start a listening server when run as a normal
+// process (`node index.js` / `npm run dev`).
+if (require.main === module) {
+  app.listen(port, () => console.log("🚀 Listening on port: " + port + " 🚀"));
+}
+
+module.exports = app

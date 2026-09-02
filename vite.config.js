@@ -8,4 +8,12 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  server: {
+    // Mirrors the /api rewrite Vercel applies in production (which preserves
+    // the full /api/... path), so the frontend can always call the API at a
+    // relative /api path in both environments.
+    proxy: {
+      '/api': 'http://localhost:4444',
+    },
+  },
 })
