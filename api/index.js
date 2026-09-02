@@ -1,6 +1,8 @@
 const app      = require('express')()
-require("dotenv").config({ quiet: true })
-const { connectToDatabase } = require('./config/db.js')
+// Loaded via an explicit path (not cwd-relative) since this file runs both
+// as `node api/index.js` (cwd = repo root) and as a bundled Vercel function.
+require("dotenv").config({ path: require('path').join(__dirname, '..', '.env'), quiet: true })
+const { connectToDatabase } = require('../server/config/db.js')
 const port     = process.env.PORT || 4444
 
 app.use(require("express").urlencoded({extended: true}))
@@ -11,14 +13,14 @@ connectToDatabase().catch(() => {})
 //==========================================================================
 app.use(require('cors')())
 //==========================================================================
-app.use('/api/auth',require('./routes/authRoutes.js'))
-app.use('/api/admin',require('./routes/adminRoutes.js'))
-app.use('/api/profile',require('./routes/profileRoutes.js'))
-app.use('/api/directory',require('./routes/directoryRoutes.js'))
-app.use('/api/projects',require('./routes/projectRoutes.js'))
-app.use('/api/issues',require('./routes/issueRoutes.js'))
-app.use('/api/tasks',require('./routes/taskRoutes.js'))
-app.use('/api/polls',require('./routes/pollRoutes.js'))
+app.use('/api/auth',require('../server/routes/authRoutes.js'))
+app.use('/api/admin',require('../server/routes/adminRoutes.js'))
+app.use('/api/profile',require('../server/routes/profileRoutes.js'))
+app.use('/api/directory',require('../server/routes/directoryRoutes.js'))
+app.use('/api/projects',require('../server/routes/projectRoutes.js'))
+app.use('/api/issues',require('../server/routes/issueRoutes.js'))
+app.use('/api/tasks',require('../server/routes/taskRoutes.js'))
+app.use('/api/polls',require('../server/routes/pollRoutes.js'))
 //==========================================================================
 // Vercel imports this file as a serverless function and calls the exported
 // app directly, so only start a listening server when run as a normal

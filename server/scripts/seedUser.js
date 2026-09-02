@@ -8,7 +8,7 @@
 //
 // --admin implies --verified --approved (an admin must be an active member).
 
-require('dotenv').config({ quiet: true })
+require('dotenv').config({ path: require('path').join(__dirname, '..', '..', '.env'), quiet: true })
 const mongoose = require('mongoose')
 const AuthUser = require('../models/AuthUser.js')
 
