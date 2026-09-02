@@ -4,6 +4,7 @@ const ProjectTeam = require('../models/ProjectTeam.js')
 const Issue = require('../models/Issue.js')
 const Task = require('../models/Task.js')
 const AuthUser = require('../models/AuthUser.js')
+const UserProfile = require('../models/UserProfile.js')
 const { isProjectMember } = require('../utils/isProjectMember.js')
 const { leaveProject: leaveProjectUtil } = require('../utils/leaveProject.js')
 const { deleteProjectCascade } = require('../utils/deleteProject.js')
@@ -93,6 +94,8 @@ async function getProject(req, res) {
     const members = await ProjectMember.find({ project_id: project._id })
     const memberUsers = await AuthUser.find({ _id: { $in: members.map((m) => m.user_id) } })
     const userById = new Map(memberUsers.map((u) => [u._id.toString(), u]))
+    const profiles = await UserProfile.find({ user_id: { $in: members.map((m) => m.user_id) } })
+    const profileByUserId = new Map(profiles.map((p) => [p.user_id.toString(), p]))
     const contactMembership = members.find((m) => m.role === 'contact')
     const contactUser = contactMembership && userById.get(contactMembership.user_id.toString())
 
@@ -111,10 +114,12 @@ async function getProject(req, res) {
         teams: teamTags.map((t) => t.team),
         members: members.map((m) => {
           const user = userById.get(m.user_id.toString())
+          const profile = profileByUserId.get(m.user_id.toString())
           return {
             id: m.user_id,
             first_name: user?.first_name ?? 'Deleted user',
             last_name: user?.last_name ?? '',
+            profile_picture: profile?.profile_picture ?? null,
             role: m.role,
           }
         }),
@@ -123,6 +128,32 @@ async function getProject(req, res) {
     })
   } catch {
     res.status(500).json({ error: 'failed_to_load_project' })
+  }
+}
+
+// PATCH /projects/:id { title, description } — any current project member.
+async function updateProject(req, res) {
+  const { title, description } = req.body || {}
+  if (!title || !title.trim()) {
+    return res.status(400).json({ error: 'title_required' })
+  }
+
+  try {
+    if (!(await isProjectMember(req.params.id, req.user._id))) {
+      return res.status(403).json({ error: 'must_be_member' })
+    }
+
+    const project = await Project.findById(req.params.id)
+    if (!project) return res.status(404).json({ error: 'not_found' })
+
+    project.title = title.trim()
+    project.description = description || ''
+    project.updated_at = new Date()
+    await project.save()
+
+    res.json({ ok: true })
+  } catch {
+    res.status(500).json({ error: 'update_failed' })
   }
 }
 
@@ -248,6 +279,7 @@ module.exports = {
   listProjects,
   createProject,
   getProject,
+  updateProject,
   joinProject,
   leaveProject,
   addTeamTag,

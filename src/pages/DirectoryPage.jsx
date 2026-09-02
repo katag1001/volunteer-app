@@ -47,8 +47,8 @@ function DirectoryPage() {
 
   return (
     <PageShell>
+      <h1>Directory</h1>
       <Card className="directory-card">
-        <h1>Directory</h1>
 
         <div className="directory-filters">
           <Button
@@ -57,6 +57,11 @@ function DirectoryPage() {
           >
             Key players only
           </Button>
+        </div>
+
+        <hr className="directory-filters__divider" />
+
+        <div className="directory-filters">
           {MASTER_TEAM_LIST.map((team) => (
             <Button
               key={team}

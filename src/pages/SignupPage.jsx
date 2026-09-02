@@ -13,7 +13,7 @@ const ERROR_MESSAGES = {
 
 function SignupPage() {
   const navigate = useNavigate()
-  const [form, setForm] = useState({ email: '', first_name: '', last_name: '', password: '' })
+  const [form, setForm] = useState({ email: '', first_name: '', last_name: '', password: '', confirmPassword: '' })
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -22,9 +22,16 @@ function SignupPage() {
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')
+
+    if (form.password !== form.confirmPassword) {
+      setError('Passwords do not match.')
+      return
+    }
+
     setSubmitting(true)
     try {
-      await apiRequest('/auth/signup', { method: 'POST', body: form })
+      const { confirmPassword, ...body } = form
+      await apiRequest('/auth/signup', { method: 'POST', body })
       navigate('/check-inbox', { state: { email: form.email } })
     } catch (err) {
       setError(ERROR_MESSAGES[err.data?.error] || 'Something went wrong. Please try again.')
@@ -50,6 +57,15 @@ function SignupPage() {
         </FormField>
         <FormField label="Password" htmlFor="password" hint="At least 8 characters.">
           <input id="password" type="password" required value={form.password} onChange={updateField('password')} />
+        </FormField>
+        <FormField label="Confirm password" htmlFor="confirmPassword">
+          <input
+            id="confirmPassword"
+            type="password"
+            required
+            value={form.confirmPassword}
+            onChange={updateField('confirmPassword')}
+          />
         </FormField>
 
         {error && <p className="auth-card__error">{error}</p>}

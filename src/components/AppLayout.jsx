@@ -52,7 +52,7 @@ function AppLayout() {
         <div className="app-nav__scroll">
           <div className="app-nav__section">
             <NavLink to="/" end className={titleClass}>
-              My projects
+              Home
             </NavLink>
           </div>
 
@@ -81,7 +81,9 @@ function AppLayout() {
 
           {session?.state === 'admin' && (
             <div className="app-nav__section">
-              <div className="app-nav__title app-nav__title--static">Admin</div>
+              <NavLink to="/admin?tab=approvals" className={titleClass}>
+                Admin
+              </NavLink>
               <Link to="/admin?tab=approvals" className={adminLinkClass('approvals')}>
                 Approvals
               </Link>

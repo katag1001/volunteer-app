@@ -106,6 +106,7 @@ function ProfileForm({ initialProfile, onSaved, submitLabel = 'Save profile' }) 
 
   return (
     <form className="profile-form" onSubmit={handleSubmit}>
+
       <FormField label="Profile picture">
         <div className="profile-form__picture-grid">
           {PROFILE_PICTURES.map((pic) => (
@@ -120,6 +121,16 @@ function ProfileForm({ initialProfile, onSaved, submitLabel = 'Save profile' }) 
             </button>
           ))}
         </div>
+      </FormField>
+
+      <FormField label="About me" hint={`${aboutMe.length}/${ABOUT_ME_MAX} characters, no links`}>
+        <textarea
+          rows={3}
+          maxLength={ABOUT_ME_MAX}
+          value={aboutMe}
+          onChange={(e) => setAboutMe(e.target.value)}
+          placeholder="What can people reach out to you about?"
+        />
       </FormField>
 
       <FormField label="Skills">
@@ -189,16 +200,6 @@ function ProfileForm({ initialProfile, onSaved, submitLabel = 'Save profile' }) 
           Show my Slack link on my profile
         </label>
       </div>
-
-      <FormField label="About me" hint={`${aboutMe.length}/${ABOUT_ME_MAX} characters, no links`}>
-        <textarea
-          rows={3}
-          maxLength={ABOUT_ME_MAX}
-          value={aboutMe}
-          onChange={(e) => setAboutMe(e.target.value)}
-          placeholder="What can people reach out to you about?"
-        />
-      </FormField>
 
       {error && <p className="profile-form__error">{error}</p>}
 

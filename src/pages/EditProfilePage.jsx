@@ -36,8 +36,9 @@ function EditProfilePage() {
 
   return (
     <PageShell>
+      <h1>Your profile</h1>
       <Card className="profile-page">
-        <h1>Your profile</h1>
+        
         {savedAt && <p className="profile-page__saved">Saved.</p>}
         <ProfileForm
           initialProfile={profile}

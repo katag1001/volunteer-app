@@ -6,9 +6,20 @@ import IssueCard from '../components/IssueCard.jsx'
 import { apiRequest } from '../lib/api.js'
 import { getToken, fetchSession } from '../lib/session.js'
 import { MASTER_TEAM_LIST } from '../lib/skillTeams.js'
+import { profilePictureSrc } from '../lib/profilePictures.js'
 import './ProjectDetailPage.css'
 
 const DELETE_PHRASE = 'delete project'
+
+function MemberAvatar({ member }) {
+  const src = member.profile_picture && profilePictureSrc(member.profile_picture)
+  if (src) return <img className="project-detail__avatar" src={src} alt="" />
+  return (
+    <div className="project-detail__avatar project-detail__avatar--placeholder">
+      {member.first_name?.[0]?.toUpperCase()}
+    </div>
+  )
+}
 
 function ProjectDetailPage() {
   const { id } = useParams()
@@ -28,6 +39,11 @@ function ProjectDetailPage() {
   const [issueDescription, setIssueDescription] = useState('')
   const [issueError, setIssueError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [membersExpanded, setMembersExpanded] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
+  const [editTitle, setEditTitle] = useState('')
+  const [editDescription, setEditDescription] = useState('')
+  const [editDetailsError, setEditDetailsError] = useState('')
 
   const load = useCallback(() => {
     apiRequest(`/projects/${id}`, { token: getToken() })
@@ -121,6 +137,28 @@ function ProjectDetailPage() {
     }
   }
 
+  const handleUpdateDetails = async (event) => {
+    event.preventDefault()
+    setEditDetailsError('')
+    if (!editTitle.trim()) {
+      setEditDetailsError('Give the project a title.')
+      return
+    }
+    setBusy(true)
+    try {
+      await apiRequest(`/projects/${id}`, {
+        method: 'PATCH',
+        token: getToken(),
+        body: { title: editTitle, description: editDescription },
+      })
+      load()
+    } catch {
+      setEditDetailsError('Could not update the project.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   const handleDelete = async (event) => {
     event.preventDefault()
     setDeleteError('')
@@ -155,123 +193,181 @@ function ProjectDetailPage() {
 
   return (
     <PageShell>
-              <h1>
+      <div className="project-detail-page">
+        <h1>
           <Link to="/projects" className="project-detail__crumb">
             Projects
           </Link>
         </h1>
-      <Card className="project-detail">
-
-
-        <div className="project-detail__header">
-          <h2>{project.title}</h2>
-          <StatusBadge status={project.status} />
-        </div>
-
-        {project.description && <p>{project.description}</p>}
-
-        <p className="project-detail__meta">
-          Contact: {project.contact ? `${project.contact.first_name} ${project.contact.last_name}` : 'None set'}
-          {' · '}
-          {project.members.length} member{project.members.length === 1 ? '' : 's'}
-        </p>
-
-        {project.teams.length > 0 && (
-          <div className="project-detail__tags">
-            {project.teams.map((team) => (
-              <span key={team} className="project-detail__tag">
-                {team}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {error && <p className="project-detail__error">{error}</p>}
-
-        {!project.is_member && (
-          <Button onClick={handleJoin} disabled={busy}>
-            Join project
-          </Button>
-        )}
-
-        <div className="project-detail__section">
-          <div className="project-detail__section-header">
-            <h2>Issues</h2>
+        <Card className="project-detail">
+          <div className="project-detail__header">
+            <div className="project-detail__header-main">
+              <h2>{project.title}</h2>
+              <StatusBadge status={project.status} />
+            </div>
             {project.is_member && (
-              <Button variant="secondary" onClick={() => setAddIssueOpen(true)}>
-                + Add issue
-              </Button>
+              <div className="project-detail__header-actions">
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setEditTitle(project.title)
+                    setEditDescription(project.description || '')
+                    setEditDetailsError('')
+                    setEditOpen(true)
+                  }}
+                >
+                  Edit project
+                </Button>
+                <Button variant="secondary" onClick={() => setLeaveConfirmOpen(true)} disabled={busy}>
+                  Leave project
+                </Button>
+              </div>
             )}
           </div>
-          {issues === null && <p>Loading…</p>}
-          {issues?.length === 0 && <p>No issues yet.</p>}
-          {issues?.map((issue) => (
-            <IssueCard
-              key={issue.id}
-              issue={issue}
-              projectMembers={project.members}
-              currentUser={currentUser}
-              isMember={project.is_member}
-              onChanged={loadIssues}
-              autoExpand={issue.id === targetIssueId}
-            />
-          ))}
-        </div>
 
-        {project.is_member && (
-          <>
-            <div className="project-detail__section">
-              <h2>Team tags</h2>
-              <div className="project-detail__team-grid">
-                {MASTER_TEAM_LIST.map((team) => (
-                  <label key={team} className="project-detail__checkbox">
-                    <input
-                      type="checkbox"
-                      checked={project.teams.includes(team)}
-                      disabled={busy}
-                      onChange={() => toggleTeam(team)}
-                    />
-                    {team}
-                  </label>
-                ))}
-              </div>
+          {project.description && <p>{project.description}</p>}
+
+          {project.teams.length > 0 && (
+            <div className="project-detail__tags">
+              {project.teams.map((team) => (
+                <span key={team} className="project-detail__tag">
+                  {team}
+                </span>
+              ))}
             </div>
+          )}
 
-            <div className="project-detail__section">
-              <h2>Members</h2>
-              <ul className="project-detail__member-list">
-                {project.members.map((member) => (
-                  <li key={member.id}>
+          <p className="project-detail__meta">
+            Contact: {project.contact ? `${project.contact.first_name} ${project.contact.last_name}` : 'None set'}
+            {' · '}
+            <button
+              type="button"
+              className="project-detail__member-toggle"
+              onClick={() => setMembersExpanded((v) => !v)}
+              aria-expanded={membersExpanded}
+            >
+              {project.members.length} member{project.members.length === 1 ? '' : 's'}
+              {membersExpanded ? ' ▲' : ' ▼'}
+            </button>
+          </p>
+
+          {membersExpanded && (
+            <div className="project-detail__member-avatars">
+              {project.members.map((member) => (
+                <div key={member.id} className="project-detail__member-avatar-item">
+                  <MemberAvatar member={member} />
+                  <span>
                     {member.first_name} {member.last_name}
-                    {member.role === 'contact' && <span className="project-detail__contact-tag">Contact</span>}
-                  </li>
-                ))}
-              </ul>
-              <FormField label="Reassign contact">
-                <select value={project.contact?.id || ''} onChange={handleSetContact} disabled={busy}>
-                  <option value="">No contact</option>
-                  {project.members.map((member) => (
-                    <option key={member.id} value={member.id}>
-                      {member.first_name} {member.last_name}
-                    </option>
-                  ))}
-                </select>
-              </FormField>
+                  </span>
+                  {member.role === 'contact' && <span className="project-detail__contact-tag">Contact</span>}
+                </div>
+              ))}
             </div>
+          )}
 
-            <div className="project-detail__actions">
-              <Button variant="secondary" onClick={() => setLeaveConfirmOpen(true)} disabled={busy}>
-                Leave project
-              </Button>
-              {project.status === 'resolved' && (
-                <Button variant="danger" onClick={() => setDeleteOpen(true)} disabled={busy}>
-                  Delete project
+          {error && <p className="project-detail__error">{error}</p>}
+
+          {!project.is_member && (
+            <Button onClick={handleJoin} disabled={busy}>
+              Join project
+            </Button>
+          )}
+
+          <div className="project-detail__section">
+            <div className="project-detail__section-header">
+              <h2>Issues</h2>
+              {project.is_member && (
+                <Button variant="secondary" onClick={() => setAddIssueOpen(true)}>
+                  + Add issue
                 </Button>
               )}
             </div>
-          </>
-        )}
-      </Card>
+            {issues === null && <p>Loading…</p>}
+            {issues?.length === 0 && <p>No issues yet.</p>}
+            {issues?.map((issue) => (
+              <IssueCard
+                key={issue.id}
+                issue={issue}
+                projectMembers={project.members}
+                currentUser={currentUser}
+                isMember={project.is_member}
+                onChanged={loadIssues}
+                autoExpand={issue.id === targetIssueId}
+              />
+            ))}
+          </div>
+
+          {project.is_member && project.status === 'resolved' && (
+            <div className="project-detail__actions">
+              <Button variant="danger" onClick={() => setDeleteOpen(true)} disabled={busy}>
+                Delete project
+              </Button>
+            </div>
+          )}
+        </Card>
+      </div>
+
+      <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit project">
+        <form onSubmit={handleUpdateDetails} className="project-detail__edit-section">
+          <FormField label="Title" htmlFor="edit-title">
+            <input id="edit-title" type="text" required value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+          </FormField>
+          <FormField label="Description" htmlFor="edit-description">
+            <textarea
+              id="edit-description"
+              rows={3}
+              value={editDescription}
+              onChange={(e) => setEditDescription(e.target.value)}
+            />
+          </FormField>
+          {editDetailsError && <p className="project-detail__error">{editDetailsError}</p>}
+          <div className="project-detail__modal-actions">
+            <Button type="submit" disabled={busy}>
+              {busy ? 'Saving…' : 'Save details'}
+            </Button>
+          </div>
+        </form>
+
+        <div className="project-detail__edit-section">
+          <h3>Team tags</h3>
+          <div className="project-detail__team-grid">
+            {MASTER_TEAM_LIST.map((team) => (
+              <label key={team} className="project-detail__checkbox">
+                <input
+                  type="checkbox"
+                  checked={project.teams.includes(team)}
+                  disabled={busy}
+                  onChange={() => toggleTeam(team)}
+                />
+                {team}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="project-detail__edit-section">
+          <h3>Members</h3>
+          <ul className="project-detail__member-list">
+            {project.members.map((member) => (
+              <li key={member.id}>
+                <MemberAvatar member={member} />
+                {member.first_name} {member.last_name}
+                {member.role === 'contact' && <span className="project-detail__contact-tag">Contact</span>}
+              </li>
+            ))}
+          </ul>
+          <FormField label="Reassign contact">
+            <select value={project.contact?.id || ''} onChange={handleSetContact} disabled={busy}>
+              <option value="">No contact</option>
+              {project.members.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.first_name} {member.last_name}
+                </option>
+              ))}
+            </select>
+          </FormField>
+        </div>
+      </Modal>
 
       <Modal open={addIssueOpen} onClose={() => setAddIssueOpen(false)} title="New issue">
         <form onSubmit={handleAddIssue}>
