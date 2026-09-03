@@ -8,7 +8,7 @@ let connectionPromise = null
 function connectToDatabase() {
   if (!connectionPromise) {
     connectionPromise = mongoose
-      .connect(process.env.MONGODB_URI)
+      .connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 8000 })
       .then((conn) => {
         console.log('Connected to the DB ✅')
         return conn

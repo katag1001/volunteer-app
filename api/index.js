@@ -8,10 +8,19 @@ const port     = process.env.PORT || 4444
 app.use(require("express").urlencoded({extended: true}))
 app.use(require("express").json())
 
-connectToDatabase().catch(() => {})
-
 //==========================================================================
 app.use(require('cors')())
+// Serverless cold starts run this module before any connection exists, so
+// requests must wait for it explicitly - otherwise Mongoose's own query
+// buffer (10s) times out first and masks the real connection error.
+app.use((req, res, next) => {
+  connectToDatabase()
+    .then(() => next())
+    .catch((error) => {
+      console.error('DB connection failed:', error.message)
+      res.status(503).json({ error: 'database_unavailable' })
+    })
+})
 //==========================================================================
 app.use('/api/auth',require('../server/routes/authRoutes.js'))
 app.use('/api/admin',require('../server/routes/adminRoutes.js'))
