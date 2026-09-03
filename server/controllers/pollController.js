@@ -2,8 +2,14 @@ const Poll = require('../models/Poll.js')
 const PollOption = require('../models/PollOption.js')
 const PollVote = require('../models/PollVote.js')
 const Issue = require('../models/Issue.js')
+const AuthUser = require('../models/AuthUser.js')
 const { isProjectMember } = require('../utils/isProjectMember.js')
 const { recalculateIssueStatus } = require('../utils/statusEngine.js')
+
+function personRef(id, userById) {
+  const user = userById.get(id.toString())
+  return { id, first_name: user?.first_name ?? 'Deleted user', last_name: user?.last_name ?? '' }
+}
 
 // GET /issues/:issueId/polls
 // prd.md §4.6 — self-serve/open to view, same as everything else in
@@ -18,11 +24,16 @@ async function listPolls(req, res) {
     const optionIds = options.map((o) => o._id)
     const votes = await PollVote.find({ option_id: { $in: optionIds } })
 
-    const voteCountByOption = new Map()
+    const userIds = [...new Set(votes.map((v) => v.user_id.toString()))]
+    const users = await AuthUser.find({ _id: { $in: userIds } })
+    const userById = new Map(users.map((u) => [u._id.toString(), u]))
+
+    const votersByOption = new Map()
     const myVotedOptions = new Set()
     for (const vote of votes) {
       const key = vote.option_id.toString()
-      voteCountByOption.set(key, (voteCountByOption.get(key) || 0) + 1)
+      if (!votersByOption.has(key)) votersByOption.set(key, [])
+      votersByOption.get(key).push(personRef(vote.user_id, userById))
       if (vote.user_id.equals(req.user._id)) myVotedOptions.add(key)
     }
 
@@ -30,11 +41,13 @@ async function listPolls(req, res) {
     for (const option of options) {
       const key = option.poll_id.toString()
       if (!optionsByPoll.has(key)) optionsByPoll.set(key, [])
+      const voters = votersByOption.get(option._id.toString()) || []
       optionsByPoll.get(key).push({
         id: option._id,
         label: option.label,
-        vote_count: voteCountByOption.get(option._id.toString()) || 0,
+        vote_count: voters.length,
         voted_by_me: myVotedOptions.has(option._id.toString()),
+        voters,
       })
     }
 
@@ -165,4 +178,27 @@ async function closePoll(req, res) {
   }
 }
 
-module.exports = { listPolls, createPoll, addPollOption, toggleVote, closePoll }
+// POST /polls/:id/reopen
+// Same permission model as closePoll — any project member, not just the
+// creator. Reopening just clears closed_at; existing votes/options are
+// untouched, and (matching closePoll) this never changes issue/project
+// status by itself.
+async function reopenPoll(req, res) {
+  try {
+    const poll = await Poll.findById(req.params.id)
+    if (!poll) return res.status(404).json({ error: 'not_found' })
+    const issue = await Issue.findById(poll.issue_id)
+    if (!(await isProjectMember(issue.project_id, req.user._id))) {
+      return res.status(403).json({ error: 'must_be_project_member' })
+    }
+    if (!poll.closed_at) return res.status(400).json({ error: 'not_closed' })
+
+    poll.closed_at = null
+    await poll.save()
+    res.json({ ok: true })
+  } catch {
+    res.status(500).json({ error: 'reopen_failed' })
+  }
+}
+
+module.exports = { listPolls, createPoll, addPollOption, toggleVote, closePoll, reopenPoll }

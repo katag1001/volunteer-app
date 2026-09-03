@@ -152,6 +152,7 @@ function ProjectDetailPage() {
         body: { title: editTitle, description: editDescription },
       })
       load()
+      setEditOpen(false)
     } catch {
       setEditDetailsError('Could not update the project.')
     } finally {
@@ -308,7 +309,7 @@ function ProjectDetailPage() {
       </div>
 
       <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit project">
-        <form onSubmit={handleUpdateDetails} className="project-detail__edit-section">
+        <form id="edit-project-form" onSubmit={handleUpdateDetails} className="project-detail__edit-section">
           <FormField label="Title" htmlFor="edit-title">
             <input id="edit-title" type="text" required value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
           </FormField>
@@ -321,11 +322,6 @@ function ProjectDetailPage() {
             />
           </FormField>
           {editDetailsError && <p className="project-detail__error">{editDetailsError}</p>}
-          <div className="project-detail__modal-actions">
-            <Button type="submit" disabled={busy}>
-              {busy ? 'Saving…' : 'Save details'}
-            </Button>
-          </div>
         </form>
 
         <div className="project-detail__edit-section">
@@ -367,6 +363,16 @@ function ProjectDetailPage() {
             </select>
           </FormField>
         </div>
+
+          <div className="project-detail__modal-actions">
+            <Button type="button" variant="secondary" onClick={() => setEditOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" form="edit-project-form" disabled={busy}>
+              {busy ? 'Saving…' : 'Save details'}
+            </Button>
+          </div>
+
       </Modal>
 
       <Modal open={addIssueOpen} onClose={() => setAddIssueOpen(false)} title="New issue">

@@ -56,6 +56,19 @@
   font-weight: 600;
 }
 
+.poll-card__option-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.poll-card__voters {
+  margin: 0;
+  padding: 0 var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
 .poll-card__error {
   color: var(--color-danger);
   background: var(--color-danger-bg);

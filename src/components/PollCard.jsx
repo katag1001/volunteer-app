@@ -5,7 +5,8 @@ import { getToken } from '../lib/session.js'
 import './PollCard.css'
 
 // prd.md §4.6 — multi-select, changeable any time before the poll closes;
-// once closed, options/votes are frozen and shown as the final tally.
+// once closed, votes are frozen and shown as the final tally, but any
+// project member can reopen a closed poll to allow voting again.
 function PollCard({ poll, isMember, onChanged }) {
   const [newOption, setNewOption] = useState('')
   const [busy, setBusy] = useState(false)
@@ -53,6 +54,18 @@ function PollCard({ poll, isMember, onChanged }) {
     }
   }
 
+  const handleReopen = async () => {
+    setBusy(true)
+    try {
+      await apiRequest(`/polls/${poll.id}/reopen`, { method: 'POST', token: getToken() })
+      onChanged()
+    } catch {
+      setError('Could not reopen this poll.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <div className="poll-card">
       <div className="poll-card__header">
@@ -62,16 +75,22 @@ function PollCard({ poll, isMember, onChanged }) {
 
       <div className="poll-card__options">
         {poll.options.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            className={`poll-card__option ${option.voted_by_me ? 'poll-card__option--voted' : ''}`}
-            onClick={() => handleVote(option.id)}
-            disabled={busy || isClosed || !isMember}
-          >
-            <span>{option.label}</span>
-            <span className="poll-card__vote-count">{option.vote_count}</span>
-          </button>
+          <div key={option.id} className="poll-card__option-row">
+            <button
+              type="button"
+              className={`poll-card__option ${option.voted_by_me ? 'poll-card__option--voted' : ''}`}
+              onClick={() => handleVote(option.id)}
+              disabled={busy || isClosed || !isMember}
+            >
+              <span>{option.label}</span>
+              <span className="poll-card__vote-count">{option.vote_count}</span>
+            </button>
+            {option.voters?.length > 0 && (
+              <p className="poll-card__voters">
+                {option.voters.map((v) => `${v.first_name} ${v.last_name}`).join(', ')}
+              </p>
+            )}
+          </div>
         ))}
       </div>
 
@@ -94,6 +113,12 @@ function PollCard({ poll, isMember, onChanged }) {
             Close poll
           </Button>
         </>
+      )}
+
+      {isClosed && isMember && (
+        <Button variant="secondary" onClick={handleReopen} disabled={busy}>
+          Reopen poll
+        </Button>
       )}
     </div>
   )
