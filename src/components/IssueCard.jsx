@@ -7,9 +7,7 @@ import { apiRequest } from '../lib/api.js'
 import { getToken } from '../lib/session.js'
 import './IssueCard.css'
 
-// prd.md §4.4 — "clicking expands it in place": no navigation, just a
-// local expand/collapse. Full detail (description, people, tasks) is
-// lazy-loaded only when first expanded, same lazy-detail pattern as
+
 // DirectoryPage.
 function IssueCard({ issue, projectMembers, currentUser, isMember, onChanged, autoExpand }) {
   const rootRef = useRef(null)

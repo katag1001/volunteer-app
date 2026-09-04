@@ -67,7 +67,7 @@ function MembersPanel() {
 
   return (
     <>
-      <p className="admin-card__intro">Promote, demote, or remove any member's account.</p>
+      <p className="admin-card__intro">Set key players, admin or remove any member's account.</p>
 
       {error && <p className="admin-card__error">{error}</p>}
 
@@ -96,7 +96,7 @@ function MembersPanel() {
               onClick={() => handleToggleAdmin(user)}
               disabled={busyId === user.id || user.is_seed_admin}
             >
-              {user.is_admin ? 'Demote' : 'Promote'}
+              {user.is_admin ? 'Unset Admin' : 'Set Admin'}
             </Button>
             <Button
               variant="danger"
