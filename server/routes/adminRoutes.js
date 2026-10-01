@@ -10,7 +10,6 @@ router.post('/users/:id/approve', adminController.approveUser)
 router.post('/users/:id/reject', adminController.rejectUser)
 router.get('/users', adminController.listUsers)
 router.patch('/users/:id/admin-status', adminController.setAdminStatus)
-router.patch('/users/:id/key-player', adminController.setKeyPlayer)
 router.delete('/users/:id', adminController.deleteUser)
 
 module.exports = router

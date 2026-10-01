@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { PageShell, Card, Button, FormField } from '../components/ui'
 import { apiRequest } from '../lib/api.js'
-import { setToken, getToken } from '../lib/session.js'
+import { setToken } from '../lib/session.js'
 import './AuthPages.css'
 
 function LoginPage() {
@@ -20,6 +20,7 @@ function LoginPage() {
     try {
       const data = await apiRequest('/auth/login', { method: 'POST', body: form })
       setToken(data.token)
+      navigate('/')
     } catch (err) {
       if (err.data?.error === 'unverified') {
         navigate('/check-inbox', { state: { email: form.email } })
@@ -28,21 +29,6 @@ function LoginPage() {
       } else {
         setError('Incorrect email or password.')
       }
-      setSubmitting(false)
-      return
-    }
-
-    // prd.md §3.5 — "on first login after approval, the user is prompted to
-    // complete their profile." teams is mandatory, so an empty teams array
-    // is a reliable signal the profile was never completed. Login itself
-    // already succeeded at this point, so any failure here just falls back
-    // to home rather than being shown as a login error.
-    try {
-      const { profile } = await apiRequest('/profile/me', { token: getToken() })
-      navigate(profile.teams.length === 0 ? '/complete-profile' : '/')
-    } catch {
-      navigate('/')
-    } finally {
       setSubmitting(false)
     }
   }

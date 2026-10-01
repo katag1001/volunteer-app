@@ -8,7 +8,7 @@ const REDIRECT_FOR_STATE = {
   unapproved: '/waiting-approval',
 }
 
-// Guards routes (profile pages) that any active member/admin can reach, but
+// Guards routes (everything inside AppLayout) that any active member/admin can reach, but
 // no one earlier in the lifecycle can — redirects to whichever holding
 // screen actually matches their current state, same as LoginPage does.
 function RequireActiveMember({ children }) {

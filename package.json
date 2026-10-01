@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "dev:api": "nodemon api/index.js",
     "start:api": "node api/index.js",
-    "seed": "node server/scripts/seedUser.js"
+    "seed": "node server/scripts/seedUser.js",
+    "db:drop-removed": "node server/scripts/dropRemovedCollections.js"
   },
   "dependencies": {
     "react": "^19.2.8",

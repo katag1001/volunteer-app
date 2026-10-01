@@ -29,9 +29,9 @@ function DeleteAccountSection() {
     setError('')
     setSubmitting(true)
     try {
-      await apiRequest('/profile/me', { method: 'DELETE', token: getToken(), body: { password } })
+      await apiRequest('/account/me', { method: 'DELETE', token: getToken(), body: { password } })
       clearToken()
-      navigate('/', { replace: true })
+      navigate('/login', { replace: true })
     } catch (err) {
       setError(ERROR_MESSAGES[err.data?.error] || 'Something went wrong. Please try again.')
     } finally {

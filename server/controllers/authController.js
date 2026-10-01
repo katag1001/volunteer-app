@@ -15,8 +15,6 @@ const {
   sendPendingApprovalEmail,
 } = require('../utils/mailer.js')
 const { signResetToken, verifyResetToken } = require('../utils/resetToken.js')
-const { ensureProfileExists } = require('../utils/ensureProfile.js')
-const UserProfile = require('../models/UserProfile.js')
 
 const MIN_PASSWORD_LENGTH = 8
 
@@ -115,9 +113,7 @@ async function verifyEmail(req, res) {
     }
 
     await user.save()
-    if (isSeedAdmin) {
-      await ensureProfileExists(user)
-    } else {
+    if (!isSeedAdmin) {
       try {
         const admins = await AuthUser.find({ is_admin: true }).select('email')
         await sendPendingApprovalEmail(admins.map((admin) => admin.email), user)
@@ -162,8 +158,6 @@ async function login(req, res) {
     if (state === 'unverified' || state === 'unapproved') {
       return res.status(403).json({ error: state })
     }
-
-    await UserProfile.updateOne({ user_id: user._id }, { last_login: new Date() })
 
     const token = signSessionToken(user)
     res.json({ token, user: user.toPublicJSON() })

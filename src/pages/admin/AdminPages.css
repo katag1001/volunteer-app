@@ -54,10 +54,6 @@
   background: var(--color-primary-bg);
 }
 
-.admin-badge--key-player {
-  color: var(--color-status-underway);
-  background: var(--color-status-underway-bg);
-}
 
 .admin-modal__actions {
   display: flex;

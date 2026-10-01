@@ -24,12 +24,8 @@ app.use((req, res, next) => {
 //==========================================================================
 app.use('/api/auth',require('../server/routes/authRoutes.js'))
 app.use('/api/admin',require('../server/routes/adminRoutes.js'))
-app.use('/api/profile',require('../server/routes/profileRoutes.js'))
-app.use('/api/directory',require('../server/routes/directoryRoutes.js'))
-app.use('/api/projects',require('../server/routes/projectRoutes.js'))
-app.use('/api/issues',require('../server/routes/issueRoutes.js'))
-app.use('/api/tasks',require('../server/routes/taskRoutes.js'))
-app.use('/api/polls',require('../server/routes/pollRoutes.js'))
+app.use('/api/account',require('../server/routes/accountRoutes.js'))
+app.use('/api/disputes',require('../server/routes/disputeRoutes.js'))
 //==========================================================================
 // Vercel imports this file as a serverless function and calls the exported
 // app directly, so only start a listening server when run as a normal

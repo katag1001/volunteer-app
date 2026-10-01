@@ -6,12 +6,10 @@ import VerifyEmailPage from './pages/VerifyEmailPage.jsx'
 import WaitingApprovalPage from './pages/WaitingApprovalPage.jsx'
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx'
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx'
-import CompleteProfilePage from './pages/CompleteProfilePage.jsx'
-import EditProfilePage from './pages/EditProfilePage.jsx'
-import DirectoryPage from './pages/DirectoryPage.jsx'
-import ProjectsPage from './pages/ProjectsPage.jsx'
-import ProjectDetailPage from './pages/ProjectDetailPage.jsx'
+import AccountPage from './pages/AccountPage.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
+import DisputesPage from './pages/DisputesPage.jsx'
+import DisputeDetailPage from './pages/DisputeDetailPage.jsx'
 import AdminPage from './pages/admin/AdminPage.jsx'
 import RequireAdmin from './components/RequireAdmin.jsx'
 import RequireActiveMember from './components/RequireActiveMember.jsx'
@@ -28,15 +26,6 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route
-        path="/complete-profile"
-        element={
-          <RequireActiveMember>
-            <CompleteProfilePage />
-          </RequireActiveMember>
-        }
-      />
-
-      <Route
         element={
           <RequireActiveMember>
             <AppLayout />
@@ -44,10 +33,9 @@ function App() {
         }
       >
         <Route path="/" element={<DashboardPage />} />
-        <Route path="/profile" element={<EditProfilePage />} />
-        <Route path="/directory" element={<DirectoryPage />} />
-        <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/projects/:id" element={<ProjectDetailPage />} />
+        <Route path="/account" element={<AccountPage />} />
+        <Route path="/disputes" element={<DisputesPage />} />
+        <Route path="/disputes/:id" element={<DisputeDetailPage />} />
 
         <Route element={<RequireAdmin />}>
           <Route path="/admin" element={<AdminPage />} />

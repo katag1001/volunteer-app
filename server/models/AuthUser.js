@@ -4,8 +4,8 @@ const Schema = mongoose.Schema
 
 const SALT_ROUNDS = 10
 
-// prd.md §3.1 — the minimal credentials/identity record. Kept deliberately
-// separate from UserProfile (Phase A5), which holds the richer profile data.
+// prd.md §3.1 — the credentials/identity record, and currently the only
+// per-user record in the app.
 const AuthUserSchema = new Schema({
   email: {
     type: String,

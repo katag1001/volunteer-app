@@ -33,24 +33,6 @@ function MembersPanel() {
     }
   }
 
-  const handleToggleKeyPlayer = async (user) => {
-    setBusyId(user.id)
-    try {
-      const data = await apiRequest(`/admin/users/${user.id}/key-player`, {
-        method: 'PATCH',
-        token: getToken(),
-        body: { is_key_player: !user.is_key_player },
-      })
-      setUsers((prev) =>
-        prev.map((u) => (u.id === user.id ? { ...u, is_key_player: data.profile.is_key_player } : u))
-      )
-    } catch {
-      setError("Could not update that member's key-player status.")
-    } finally {
-      setBusyId(null)
-    }
-  }
-
   const handleDelete = async () => {
     const user = deleteTarget
     setDeleteTarget(null)
@@ -67,7 +49,7 @@ function MembersPanel() {
 
   return (
     <>
-      <p className="admin-card__intro">Set key players, admin or remove any member's account.</p>
+      <p className="admin-card__intro">Set admin or remove any member's account.</p>
 
       {error && <p className="admin-card__error">{error}</p>}
 
@@ -80,17 +62,9 @@ function MembersPanel() {
             <strong>{user.first_name} {user.last_name}</strong>
             {user.is_seed_admin && <span className="admin-badge">Seed admin</span>}
             {!user.is_seed_admin && user.is_admin && <span className="admin-badge">Admin</span>}
-            {user.is_key_player && <span className="admin-badge admin-badge--key-player">Key player</span>}
             <div className="admin-row__meta">{user.email}</div>
           </div>
           <div className="admin-row__actions">
-            <Button
-              variant="secondary"
-              onClick={() => handleToggleKeyPlayer(user)}
-              disabled={busyId === user.id}
-            >
-              {user.is_key_player ? 'Unset key player' : 'Set key player'}
-            </Button>
             <Button
               variant="secondary"
               onClick={() => handleToggleAdmin(user)}
